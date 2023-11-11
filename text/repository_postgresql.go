@@ -23,9 +23,18 @@ func (r *PostgreSQLTextRepository) Migrate(ctx context.Context) error {
     CREATE TABLE texts(
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         title VARCHAR(255) UNIQUE NOT NULL,
-        content ...type REFERENCES tokens(id)
+        content TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE tokens(
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        content VARCHAR(255) NOT NULL,
+        type INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     `
+
     _, err := r.db.ExecContext(ctx, query)
     return err
 }
