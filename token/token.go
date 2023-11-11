@@ -5,10 +5,10 @@ import (
 	"unicode"
 )
 
-type ContentType int
+type TokenType int
 
 const (
-    Word ContentType = iota
+    Word TokenType = iota
     Punctuation
     Space
     NewLine
@@ -18,18 +18,18 @@ const (
 type Token struct {
     ID          string `db:"id"`
     Content     string `db:"content"`
-    ContentType ContentType `db:"content_type"`
+    Type TokenType `db:"type"`
 }
 
 func NewToken(content string) *Token {
-    contentType := parseTokenContentType(content)
+    contentType := parseTokenType(content)
     return &Token{
         Content: content,
-        ContentType: contentType,
+        Type: contentType,
     }
 }
 
-func parseTokenContentType(token string) ContentType {
+func parseTokenType(token string) TokenType {
     if isWord(token) {
         return Word
     } else if isPunctuation(token) {

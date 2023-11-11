@@ -23,7 +23,7 @@ func (r *PostgreSQLTokenRepository) Migrate(ctx context.Context) error {
     CREATE TABLE tokens(
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         content VARCHAR(255) NOT NULL,
-        content_type INTEGER NOT NULL
+        type INTEGER NOT NULL
     );
     `
     _, err := r.db.ExecContext(ctx, query)
@@ -32,7 +32,7 @@ func (r *PostgreSQLTokenRepository) Migrate(ctx context.Context) error {
 
 func (r *PostgreSQLTokenRepository) Create(ctx context.Context, token Token) (*Token, error) {
     var id string
-    err := r.db.QueryRowContext(ctx, "INSERT INTO tokens(content, content_type) VALUES($1, $2) RETURNING id", token.Content, token.ContentType).Scan(&id); if err != nil {
+    err := r.db.QueryRowContext(ctx, "INSERT INTO tokens(content, type) VALUES($1, $2) RETURNING id", token.Content, token.Type).Scan(&id); if err != nil {
         var pgxError *pgconn.PgError
         if errors.As(err, &pgxError) {
             if pgxError.Code == RecordExistsErrorCode {
@@ -56,7 +56,7 @@ func (r *PostgreSQLTokenRepository) All(ctx context.Context) ([]Token, error) {
 
     for rows.Next() {
         var token Token
-        if err := rows.Scan(&token.ID, &token.Content, &token.ContentType); err != nil {
+        if err := rows.Scan(&token.ID, &token.Content, &token.Type); err != nil {
             return all, err
         }
         all = append(all, token)
@@ -69,7 +69,7 @@ func (r *PostgreSQLTokenRepository) GetByContent(ctx context.Context, content st
     row := r.db.QueryRowContext(ctx, "SELECT * FROM tokens WHERE content = $1", content)
 
     var token Token
-    if err := row.Scan(&token.ID, &token.Content, &token.ContentType); err != nil {
+    if err := row.Scan(&token.ID, &token.Content, &token.Type); err != nil {
         if errors.Is(err, sql.ErrNoRows) {
             return nil, ErrNotExist
         }
@@ -84,7 +84,7 @@ func (r *PostgreSQLTokenRepository) GetById(ctx context.Context, id string) (*To
     row := r.db.QueryRowContext(ctx, "SELECT * FROM tokens WHERE id = $1", id)
 
     var token Token
-    if err := row.Scan(&token.ID, &token.Content, &token.ContentType); err != nil {
+    if err := row.Scan(&token.ID, &token.Content, &token.Type); err != nil {
         if errors.Is(err, sql.ErrNoRows) {
             return nil, ErrNotExist
         }
@@ -96,7 +96,7 @@ func (r *PostgreSQLTokenRepository) GetById(ctx context.Context, id string) (*To
 }
 
 func (r *PostgreSQLTokenRepository) Update(ctx context.Context, id string, updated Token) (*Token, error) {
-    res, err := r.db.ExecContext(ctx, "UPDATE tokens SET content = $1, content_type = $2 WHERE id = $3", updated.Content, updated.ContentType, id)
+    res, err := r.db.ExecContext(ctx, "UPDATE tokens SET content = $1, type = $2 WHERE id = $3", updated.Content, updated.Type, id)
     if err != nil {
         var pgxError *pgconn.PgError
         if errors.As(err, &pgxError) {
