@@ -13,7 +13,7 @@ import (
 	"github.com/andriyskachko/zephyr-api/token"
 	"github.com/joho/godotenv"
 
-    _ "github.com/jackc/pgx/v4/stdlib"
+    _ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var contextTimeout = 10 * time.Second
@@ -52,5 +52,10 @@ func connectToPg() *sql.DB {
         log.Fatal(err)
     }
 
+    if err = db.Ping(); err != nil {
+        log.Fatal("Failed to ping the database")
+    }
+
     return db
 }
+
