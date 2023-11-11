@@ -21,9 +21,9 @@ func NewPostgreSQLTextRepository(db *sql.DB) *PostgreSQLTextRepository {
 func (r *PostgreSQLTextRepository) Migrate(ctx context.Context) error {
     query := `
     CREATE TABLE texts(
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         title VARCHAR(255) UNIQUE NOT NULL,
-        content UUID[] REFERENCES tokens(id)
+        content ...type REFERENCES tokens(id)
     );
     `
     _, err := r.db.ExecContext(ctx, query)

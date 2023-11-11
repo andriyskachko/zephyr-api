@@ -21,7 +21,7 @@ func NewPostgreSQLTokenRepository(db *sql.DB) *PostgreSQLTokenRepository {
 func (r *PostgreSQLTokenRepository) Migrate(ctx context.Context) error {
     query := `
     CREATE TABLE tokens(
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         content VARCHAR(255) NOT NULL,
         type INTEGER NOT NULL
     );
