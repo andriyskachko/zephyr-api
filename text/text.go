@@ -8,3 +8,10 @@ type Text struct {
     Content []token.Token `db:"content"`
 }
 
+func NewText(title string, content []token.Token) *Text {
+    return &Text{
+        Title: title,
+        Content: content,
+    }
+}
+
